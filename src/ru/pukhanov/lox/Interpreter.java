@@ -46,6 +46,11 @@ class Interpreter implements Expr.Visitor<Object> {
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
 
+    private void checkDivisionByZero(Token operator, double right) {
+        if (right != 0) return;
+        throw new RuntimeError(operator, "Division by zero.");
+    }
+
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = evaluate(expr.left);
@@ -73,6 +78,7 @@ class Interpreter implements Expr.Visitor<Object> {
                 return (double) left - (double) right;
             case SLASH:
                 checkNumberOperands(expr.operator, left, right);
+                checkDivisionByZero(expr.operator, (double) right);
                 return (double) left / (double) right;
             case STAR:
                 checkNumberOperands(expr.operator, left, right);
