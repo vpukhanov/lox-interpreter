@@ -82,13 +82,11 @@ class Interpreter implements Expr.Visitor<Object> {
                     return (double) left + (double) right;
                 }
 
-                if (left instanceof String && right instanceof String) {
-                    //https://youtrack.jetbrains.com/issue/IDEA-236691
-                    //noinspection RedundantCast
-                    return (String) left + (String) right;
+                if (left instanceof String || right instanceof String) {
+                    return stringify(left) + stringify(right);
                 }
 
-                throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
+                throw new RuntimeError(expr.operator, "Both operands must be numbers or one of them must be string.");
         }
 
         // Unreachable
