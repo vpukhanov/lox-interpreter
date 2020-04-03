@@ -1,11 +1,20 @@
 package ru.pukhanov.lox;
 
+import java.util.List;
+
 abstract class Stmt {
+    abstract <R> R accept(Visitor<R> visitor);
+
     interface Visitor<R> {
+        R visitBlockStmt(Block stmt);
+
         R visitExpressionStmt(Expression stmt);
+
         R visitPrintStmt(Print stmt);
+
         R visitVarStmt(Var stmt);
     }
+
     static class Expression extends Stmt {
         Expression(Expr expression) {
             this.expression = expression;
@@ -30,8 +39,6 @@ abstract class Stmt {
 
         final Expr expression;
     }
-    abstract <R> R accept(Visitor<R> visitor);
-
     static class Var extends Stmt {
         Var(Token name, Expr initializer) {
             this.name = name;
@@ -45,5 +52,18 @@ abstract class Stmt {
 
         final Token name;
         final Expr initializer;
+    }
+
+    static class Block extends Stmt {
+        final List<Stmt> statements;
+
+        Block(List<Stmt> statements) {
+            this.statements = statements;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitBlockStmt(this);
+        }
     }
 }
