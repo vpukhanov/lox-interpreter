@@ -3,16 +3,14 @@ package ru.pukhanov.lox;
 import java.util.List;
 
 abstract class Stmt {
-    abstract <R> R accept(Visitor<R> visitor);
     interface Visitor<R> {
         R visitBlockStmt(Block stmt);
         R visitExpressionStmt(Expression stmt);
-
         R visitIfStmt(If stmt);
-
         R visitPrintStmt(Print stmt);
         R visitVarStmt(Var stmt);
     }
+    abstract <R> R accept(Visitor<R> visitor);
     static class Expression extends Stmt {
         Expression(Expr expression) {
             this.expression = expression;
@@ -38,7 +36,6 @@ abstract class Stmt {
             return visitor.visitBlockStmt(this);
         }
     }
-
     static class Print extends Stmt {
         Print(Expr expression) {
             this.expression = expression;
@@ -70,7 +67,6 @@ abstract class Stmt {
         final Expr condition;
         final Stmt thenBranch;
         final Stmt elseBranch;
-
         If(Expr condition, Stmt thenBranch, Stmt elseBranch) {
             this.condition = condition;
             this.thenBranch = thenBranch;

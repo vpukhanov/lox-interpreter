@@ -1,15 +1,19 @@
 package ru.pukhanov.lox;
 
 abstract class Expr {
+    abstract <R> R accept(Visitor<R> visitor);
     interface Visitor<R> {
         R visitAssignExpr(Assign expr);
         R visitBinaryExpr(Binary expr);
         R visitGroupingExpr(Grouping expr);
+
         R visitLiteralExpr(Literal expr);
+
+        R visitLogicalExpr(Logical expr);
+
         R visitUnaryExpr(Unary expr);
         R visitVariableExpr(Variable expr);
     }
-    abstract <R> R accept(Visitor<R> visitor);
     static class Binary extends Expr {
         Binary(Expr left, Token operator, Expr right) {
             this.left = left;
@@ -50,6 +54,22 @@ abstract class Expr {
 
         final Object value;
     }
+
+    static class Assign extends Expr {
+        final Token name;
+        final Expr value;
+
+        Assign(Token name, Expr value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitAssignExpr(this);
+        }
+    }
+
     static class Unary extends Expr {
         Unary(Token operator, Expr right) {
             this.operator = operator;
@@ -77,18 +97,20 @@ abstract class Expr {
         final Token name;
     }
 
-    static class Assign extends Expr {
-        final Token name;
-        final Expr value;
+    static class Logical extends Expr {
+        final Expr left;
+        final Token operator;
+        final Expr right;
 
-        Assign(Token name, Expr value) {
-            this.name = name;
-            this.value = value;
+        Logical(Expr left, Token operator, Expr right) {
+            this.left = left;
+            this.operator = operator;
+            this.right = right;
         }
 
         @Override
         <R> R accept(Visitor<R> visitor) {
-            return visitor.visitAssignExpr(this);
+            return visitor.visitLogicalExpr(this);
         }
     }
 }
